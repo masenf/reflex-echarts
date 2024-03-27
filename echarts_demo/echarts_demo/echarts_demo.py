@@ -1,6 +1,6 @@
+import json
 import random
-
-import httpx
+from pathlib import Path
 
 import reflex as rx
 
@@ -8,11 +8,10 @@ from reflex_echarts import echarts
 
 from . import themes
 
-
-ROOT_PATH = "https://echarts.apache.org/examples"
-_response = httpx.get(f"{ROOT_PATH}/data/asset/data/life-expectancy-table.json")
-_response.raise_for_status()
-_rawData = _response.json()
+# https://echarts.apache.org/examples/data/asset/data/life-expectancy-table.json
+_rawData_file = Path(__file__).parent / "life-expectancy-table.json"
+with _rawData_file.open("r") as f:
+    _rawData = json.load(f)
 
 
 class State(rx.State):
@@ -88,7 +87,7 @@ class State(rx.State):
         self.country_income_race = {
             "animationDuration": 10000,
             "dataset": [{"id": "dataset_raw", "source": _rawData}, *datasetWithFilters],
-            "title": {"text": "Income of Germany and France since 1950"},
+            "title": {"text": "Income of European countries since 1950"},
             "tooltip": {"order": "valueDesc", "trigger": "axis"},
             "xAxis": {"type": "category", "nameLocation": "middle"},
             "yAxis": {"name": "Income"},
