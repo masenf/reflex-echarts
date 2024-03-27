@@ -1,0 +1,35 @@
+[build-system]
+requires = [
+    "setuptools",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "reflex-echarts"
+version = "0.0.1"
+description = "Reflex Wrapper for echarts-for-react library."
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.8"
+authors = [{ name = "Masen Furer", email = "m_github@0x26.net" }]
+keywords = [
+    "reflex",
+    "reflex-custom-components"]
+
+dependencies = [
+    "reflex>=0.4.2"
+]
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+]
+
+[project.urls]
+Homepage = "https://github.com/masenf/react-echarts"
+
+[project.optional-dependencies]
+dev = ["build", "twine"]
+
+[tool.setuptools.packages.find]
+where = ["custom_components"]
