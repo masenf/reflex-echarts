@@ -1,5 +1,6 @@
 """Wrapper for echarts-for-react library."""
-from typing import Any, Dict, Optional
+
+from typing import Dict, Optional
 
 import reflex as rx
 
@@ -11,7 +12,7 @@ class Echarts(rx.Component):
         Set any echarts option dict to the option prop. The chart will update when the
         option data updates.
 
-    See https://www.npmjs.com/package/echarts-for-react for explaination of props.
+    See https://www.npmjs.com/package/echarts-for-react for explanation of props.
     See https://echarts.apache.org/examples/en/index.html for echarts examples.
     """
 
@@ -46,9 +47,8 @@ class Echarts(rx.Component):
     # the opts of echarts. object, will be used when initial echarts instance by echarts.init. Document here.
     opts: rx.Var[Dict]
 
-    # binding the echarts event, will callback with the echarts event object, and the echart object as it's paramters.
-    # WiP
-    # on_events: Dict[str, rx.EventHandler]
+    # Fired when the chart is ready
+    on_chart_ready: rx.EventHandler[rx.event.no_args_event_spec]
 
     @classmethod
     def create(cls, *children, **props):
@@ -65,27 +65,18 @@ class Echarts(rx.Component):
         props["width"] = props.pop("width", "100%")
         return super().create(*children, **props)
 
-    def get_event_triggers(self) -> Dict[str, Any]:
-        return super().get_event_triggers() | {
-            "on_chart_ready": lambda: [],
+    def _exclude_props(self) -> list[str]:
+        return [*super()._exclude_props(), "register_theme_code"]
+
+    def add_imports(self) -> rx.ImportDict:
+        return {
+            "echarts": [rx.ImportVar(tag="* as echarts", is_default=True)],
         }
 
-    def _exclude_props(self) -> list[str]:
-        return super()._exclude_props() + ["register_theme_code"]
-
-    def _get_imports(self):
-        return rx.utils.imports.merge_imports(
-            super()._get_imports(),
-            {
-                "echarts": [
-                    rx.utils.imports.ImportVar(tag="* as echarts", is_default=True)
-                ],
-            },
-        )
-
-    def _get_custom_code(self) -> str | None:
+    def add_custom_code(self) -> list[str]:
         if self.register_theme_code is not None:
-            return self.register_theme_code
+            return [self.register_theme_code]
+        return []
 
 
 echarts = Echarts.create
