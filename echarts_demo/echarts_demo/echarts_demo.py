@@ -3,15 +3,13 @@ import random
 from pathlib import Path
 
 import reflex as rx
-
 from reflex_echarts import echarts
 
 from . import themes
 
 # https://echarts.apache.org/examples/data/asset/data/life-expectancy-table.json
-_rawData_file = Path(__file__).parent / "life-expectancy-table.json"
-with _rawData_file.open("r") as f:
-    _rawData = json.load(f)
+with (Path(__file__).parent / "life-expectancy-table.json").open("r") as f:
+    _raw_data = json.load(f)
 
 
 class State(rx.State):
@@ -28,11 +26,13 @@ class State(rx.State):
 
     country_income_race: dict = {}
 
+    @rx.event
     def munge_line_chart(self):
         self.line_chart["series"][0]["data"] = [
             random.randint(120, 280) for _ in range(7)
         ]
 
+    @rx.event
     def on_load(self):
         countries = [
             "Finland",
@@ -44,13 +44,13 @@ class State(rx.State):
             "Russia",
             "United Kingdom",
         ]
-        datasetWithFilters = []
-        seriesList = []
+        dataset_with_filters = []
+        series_list = []
         for country in countries:
-            datasetId = "dataset_" + country
-            datasetWithFilters.append(
+            dataset_id = "dataset_" + country
+            dataset_with_filters.append(
                 {
-                    "id": datasetId,
+                    "id": dataset_id,
                     "fromDatasetId": "dataset_raw",
                     "transform": {
                         "type": "filter",
@@ -63,10 +63,10 @@ class State(rx.State):
                     },
                 }
             )
-            seriesList.append(
+            series_list.append(
                 {
                     "type": "line",
-                    "datasetId": datasetId,
+                    "datasetId": dataset_id,
                     "showSymbol": False,
                     "name": country,
                     "endLabel": {
@@ -86,13 +86,16 @@ class State(rx.State):
 
         self.country_income_race = {
             "animationDuration": 10000,
-            "dataset": [{"id": "dataset_raw", "source": _rawData}, *datasetWithFilters],
+            "dataset": [
+                {"id": "dataset_raw", "source": _raw_data},
+                *dataset_with_filters,
+            ],
             "title": {"text": "Income of European countries since 1950"},
             "tooltip": {"order": "valueDesc", "trigger": "axis"},
             "xAxis": {"type": "category", "nameLocation": "middle"},
             "yAxis": {"name": "Income"},
             "grid": {"right": 140},
-            "series": seriesList,
+            "series": series_list,
         }
 
 
